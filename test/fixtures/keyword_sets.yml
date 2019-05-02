@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: MyString
+  keyword: MyText
+  brand_name: MyText
+  manufacturer: MyText
+  recommended_browse_nodes: MyText
+  generic_keywords: MyText
+
+two:
+  user_id: MyString
+  keyword: MyText
+  brand_name: MyText
+  manufacturer: MyText
+  recommended_browse_nodes: MyText
+  generic_keywords: MyText

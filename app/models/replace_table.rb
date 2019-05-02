@@ -1,0 +1,2 @@
+class ReplaceTable < ApplicationRecord
+end

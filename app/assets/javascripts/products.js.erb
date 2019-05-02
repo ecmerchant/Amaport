@@ -1,0 +1,78 @@
+document.addEventListener("DOMContentLoaded", function() {
+  // ページ読込後に実行
+
+  var max_col = 11;
+  var max_row = 20;
+  var init_col = new Array(max_col).fill(null);
+  var init_data = new Array(max_row);
+  for(let x = 0; x < max_row; x++){
+    init_data[x] = init_col;
+  }
+  console.log("===== DEBUG ======");
+  var container = document.getElementById('main');
+  var handsontable = new Handsontable(container, {
+    /* オプション */
+    width: 1180,
+    height: 240,
+    contextMenu: true,
+    data: init_data,
+    rowHeaders: true,
+    colHeaders: ["ヤフオク商品URL","商品タイトル","オークションID","現在価格","即決価格","状態","入札件数","残り時間","画像1","画像2","画像3"],
+    maxCols: max_col,
+    maxRows: max_row,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[200,300,150,120,120,120,120,120,120,120,120]
+  });
+
+  <% header = Constants::AH %>
+
+  console.log(<%= header %>);
+  var idata = <%= header %>;
+
+  var csv_container = document.getElementById('csv');
+  var csv_handsontable = new Handsontable(csv_container, {
+    /* オプション */
+    width: 980,
+    height: 240,
+    data: idata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: true,
+    maxRows: max_row,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    wordWrap: false
+  });
+
+  csv_handsontable.alter('insert_row', [].length, 10);
+
+  var selected_container = document.getElementById('selected');
+  var init = [];
+  init[0] = [];
+  init[0][0] = "";
+
+  var selected_handsontable = new Handsontable(selected_container, {
+    /* オプション */
+    width: 380,
+    height: 60,
+    colWidths: [340],
+    data: init,
+    colHeaders: ["選択中のセル"],
+    rowHeaders: false,
+    maxRows: 1,
+    manualColumnResize: true,
+    autoColumnSize: true,
+    wordWrap: false
+  });
+
+  Handsontable.hooks.add('afterSelectionEnd', function() {
+    var data = csv_handsontable.getValue();
+    var res = [];
+    res[0] = [];
+    res[0][0] = data;
+    selected_handsontable.loadData(res);
+    selected_handsontable.render();
+  }, csv_handsontable);
+
+});

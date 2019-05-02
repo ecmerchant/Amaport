@@ -1,0 +1,2 @@
+class ListingTemplate < ApplicationRecord
+end

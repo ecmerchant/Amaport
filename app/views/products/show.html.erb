@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="page-header" id="banner">
+    <div class="row my-4">
+      <div class="col-12">
+        <h2>Amaport<small style="margin-left:20px;">アマゾン出品支援ツール</small></h2>
+        <h4><strong>ヤフオクから情報取得</strong></h4>
+        <button id="done" class="btn btn-primary" style="margin-right:20px;">ヤフオク情報取得</button>
+        <button id="make_csv" class="btn btn-primary" style="margin-right:20px;">CSV作成</button>
+        <% @tt=Time.now.strftime("_%H%M%S") %>
+        <a href="#" id="csv_output" download="list<%= @tt %>.txt" class="btn btn-warning" style="margin-right:20px;">CSV出力</a>
+        <button id="csv_upload" class="btn btn-danger" style="margin-right:20px;">アップロード</button>
+        <br>
+        <div class="progress progress-striped active"  style="margin-top:20px; width:60%;">
+          <div class="progress-bar" style="width: 0%" id="progressbar"></div>
+        </div>
+        <div id="main"></div>
+        <br>
+        <h4><strong>アップロードCSVの確認</strong></h4>
+        <div id="selected"></div>
+        <div id="csv"></div>
+      </div>
+    </div>
+  </div>
+</div>

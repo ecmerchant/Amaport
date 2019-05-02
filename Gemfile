@@ -86,3 +86,5 @@ gem 'rubyXL'
 # gem for pagination
 gem 'kaminari'
 gem 'kaminari-bootstrap'
+
+gem "csv", ">= 1.0.2"

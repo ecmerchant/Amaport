@@ -1,0 +1,2 @@
+class KeywordSet < ApplicationRecord
+end

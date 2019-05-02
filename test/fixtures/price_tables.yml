@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: MyString
+  buy_price: 1
+  sell_price: 1
+
+two:
+  user_id: MyString
+  buy_price: 1
+  sell_price: 1
