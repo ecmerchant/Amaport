@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  post 'products/regist'
   post 'products/upload'
   get 'products/show'
   post 'products/search'

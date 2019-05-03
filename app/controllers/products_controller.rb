@@ -3,6 +3,9 @@ class ProductsController < ApplicationController
   require 'open-uri'
   require 'peddler'
 
+  before_action :authenticate_user!, :except => [:regist]
+  protect_from_forgery :except => [:regist]
+
   def show
     @login_user = current_user
   end
@@ -489,26 +492,21 @@ class ProductsController < ApplicationController
 
     process = ""
     err = 0
-=begin
-    while process != "_DONE_" do
-      sleep(25)
-      list = {feed_submission_id_list: submissionId}
-      parser = client.get_feed_submission_list(list)
-      doc = Nokogiri::XML(parser.body)
-      process = doc.xpath(".//mws:FeedProcessingStatus", {"mws"=>"http://mws.amazonaws.com/doc/2009-01-01/"}).text
-      logger.debug(doc)
-      err += 1
-      if err > 1 then
-        break
+    render json: res
+  end
+
+  def regist
+    if request.post? then
+      logger.debug("====== Regist from Form Start =======")
+      user = params[:user]
+      password = params[:password]
+      if User.find_by(email: user) == nil then
+        #新規登録
+        init_password = password
+        tuser = User.create(email: user, password: init_password, admin_flg: false)
+        return
       end
     end
-    parser = client.get_feed_submission_result(submissionId)
-    doc = Nokogiri::XML(parser.body)
-    logger.debug(doc)
-    logger.debug("\n\n")
-=end
-    res = ["test"]
-    render json: res
   end
 
 
