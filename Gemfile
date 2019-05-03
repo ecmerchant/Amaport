@@ -83,6 +83,8 @@ gem 'activerecord-import'
 # gem for excel
 gem 'rubyXL'
 
+gem 'peddler'
+
 # gem for pagination
 gem 'kaminari'
 gem 'kaminari-bootstrap'

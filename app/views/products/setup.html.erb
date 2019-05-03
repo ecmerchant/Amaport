@@ -1,0 +1,262 @@
+<div class="container">
+  <div class="page-header" id="banner">
+    <div class="row my-4">
+      <div class="col-lg-12">
+        <div class="form-inline">
+        <h2>ツールの各種設定</h2><button id="setup_data" class="btn btn-primary" style="margin-left:30px; margin-bottom:10px;">設定を反映する</button>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <hr class="my-4">
+        <h4>定型パラメータの設定</h4>
+        <div id="fix_table"></div>
+      </div>
+      <div class="col-lg-6">
+        <hr class="my-4">
+        <h4>除外セラーの設定</h4>
+        <div id="ng_seller_table"></div>
+      </div>
+      <div class="col-lg-12">
+        <hr class="my-4">
+        <h4>キーワードとの紐づけ設定</h4>
+        <div id="keyword_table"></div>
+      </div>
+
+      <div class="col-lg-6">
+        <hr class="my-4">
+        <h4>販売価格テーブルの設定</h4>
+        <div id="price_table"></div>
+      </div>
+      <div class="col-lg-6">
+        <hr class="my-4">
+        <h4>商品名置換テーブルの設定</h4>
+        <div id="replace_table"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var maxColnum = 2;
+  var maxRownum = 500;
+
+  var pdata = <%= @pdata %>;
+  var fdata = <%= @fdata %>;
+  var tdata = <%= @tdata %>;
+  var kdata = <%= @kdata %>;
+  var ndata = <%= @ndata %>;
+
+  if(pdata.length == 0){
+    var pdata = [];
+    var rnum = 100;
+    for(var i = 0; i < rnum; i++){
+      pdata[i] = [];
+      pdata[i][0] = i * 5000;
+      pdata[i][1] = i * 5000 + 2980;
+    }
+  }else{
+    var rnum = 100;
+    for(var i = pdata.length; i < rnum; i++){
+      pdata[i] = [];
+      pdata[i][0] = "";
+      pdata[i][1] = "";
+    }
+  }
+
+  if(fdata.length == 0){
+    var fdata = [];
+    var rnum = 10;
+    for(var i = 0; i < rnum; i++){
+      fdata[i] = [];
+      fdata[i][0] = "";
+      fdata[i][1] = "";
+      fdata[i][2] = "";
+    }
+
+    fdata[0][0] = "feed_product_type"
+    fdata[1][0] = "quantity"
+    fdata[2][0] = "recommended_browse_nodes"
+    fdata[3][0] = "fulfillment_latency"
+    fdata[4][0] = "condition_type"
+    fdata[5][0] = "condition_note"
+    fdata[6][0] = "standard_price_points"
+    fdata[0][1] = "商品タイプ"
+    fdata[1][1] = "数量"
+    fdata[2][1] = "推奨ブラウズノード番号"
+    fdata[3][1] = "出荷作業日数"
+    fdata[4][1] = "商品のコンディション"
+    fdata[5][1] = "商品のコンディション説明"
+    fdata[6][1] = "ポイント（販売価格に対するパーセントを記入）"
+  }else{
+    var rnum = 10;
+    for(var i = fdata.length; i < rnum; i++){
+      fdata[i] = [];
+      fdata[i][0] = "";
+      fdata[i][1] = "";
+      fdata[i][2] = "";
+    }
+  }
+
+
+  var price_container = document.getElementById('price_table');
+  var price_handsontable = Handsontable(price_container, {
+    /* オプション */
+    width: '100%',
+    height: 240,
+    data: pdata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: ["ヤフオク販売価格","アマゾン販売価格"],
+    maxCols: maxColnum,
+    maxRows: maxRownum,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[200, 200]
+  });
+
+  var fix_container = document.getElementById('fix_table');
+  var fix_handsontable = Handsontable(fix_container, {
+    /* オプション */
+    width: '100%',
+    height: 240,
+    data: fdata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: ["項目名","説明","値"],
+    maxCols: maxColnum,
+    maxRows: maxRownum,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[250, 250, 250]
+  });
+
+
+
+  if(tdata.length == 0){
+    var mnum = 500;
+    for(var i = 0; i < mnum; i++){
+      tdata[i] = [];
+      tdata[i][0] = "";
+      tdata[i][1] = "";
+    }
+  }else{
+    var mnum = 500;
+    for(var i = tdata.length; i < mnum; i++){
+      tdata[i] = [];
+      tdata[i][0] = "";
+      tdata[i][1] = "";
+    }
+  }
+
+  var title_container = document.getElementById('replace_table');
+  var title_handsontable = Handsontable(title_container, {
+    /* オプション */
+    width: '100%',
+    height: 240,
+    data: tdata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: ["置換前","置換後"],
+    maxCols: maxColnum,
+    maxRows: maxRownum,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[200, 200]
+  });
+
+
+  if(kdata.length == 0){
+    var mnum = 500;
+    for(var i = 0; i < mnum; i++){
+      kdata[i] = [];
+      kdata[i][0] = "";
+      kdata[i][1] = "";
+      kdata[i][2] = "";
+      kdata[i][3] = "";
+      kdata[i][4] = "";
+    }
+  }else{
+    var mnum = 500;
+    for(var i = kdata.length; i < mnum; i++){
+      kdata[i] = [];
+      kdata[i][0] = "";
+      kdata[i][1] = "";
+      kdata[i][2] = "";
+      kdata[i][3] = "";
+      kdata[i][4] = "";
+    }
+  }
+
+  var keyword_container = document.getElementById('keyword_table');
+  var keyword_handsontable = Handsontable(keyword_container, {
+    /* オプション */
+    width: '100%',
+    height: 240,
+    data: kdata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: ["キーワード","brand_name（ブランド名）","manufacturer（メーカ名）","recommended_browse_nodes（推奨ブラウズノード）","generic_keywords（検索キーワード）"],
+    maxCols: 5,
+    maxRows: maxRownum,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[200, 250, 250, 450, 400]
+  });
+
+  console.log(ndata);
+  if(ndata.length == 0){
+    var mnum = 500;
+    for(var i = 0; i < mnum; i++){
+      ndata[i] = [];
+      ndata[i][0] = "";
+    }
+  }else{
+    var mnum = 500;
+    for(var i = ndata.length; i < mnum; i++){
+      ndata[i] = [];
+      ndata[i][0] = "";
+    }
+  }
+  console.log(ndata);
+
+  var ng_seller_container = document.getElementById('ng_seller_table');
+  var ng_seller_handsontable = Handsontable(ng_seller_container, {
+    /* オプション */
+    width: '100%',
+    height: 240,
+    data: ndata,
+    contextMenu: true,
+    rowHeaders: true,
+    colHeaders: ["除外セラーID"],
+    maxCols: 1,
+    maxRows: maxRownum,
+    manualColumnResize: true,
+    autoColumnSize: false,
+    colWidths:[300]
+  });
+
+  $("#setup_data").click(function () {
+    var pricedata = price_handsontable.getData();
+    var titledata = title_handsontable.getData();
+    var keydata = keyword_handsontable.getData();
+    var fixdata = fix_handsontable.getData();
+    var ngdata = ng_seller_handsontable.getData();
+
+    var sdata = {price: pricedata, title: titledata, keyword: keydata, fixed: fixdata, ng: ngdata};
+    sdata = JSON.stringify(sdata);
+    send_data = {data: sdata};
+
+    $.ajax({
+      url: "/products/setup",
+      type: "POST",
+      data: send_data,
+      dataType: 'json',
+      success: function (myData) {
+        alert("更新しました");
+      },
+      error: function (myData) {
+        alert("更新しました");
+      }
+    });
+  });
+
+</script>

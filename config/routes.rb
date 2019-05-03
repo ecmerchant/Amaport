@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
+  post 'products/upload'
   get 'products/show'
+  post 'products/search'
+  post 'products/set_csv'
   get 'products/setup'
+  post 'products/setup'
+  get 'products/prepare'
+  post 'products/prepare'
   root to: 'products#show'
 
   devise_scope :user do

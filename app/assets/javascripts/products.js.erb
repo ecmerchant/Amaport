@@ -1,14 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
   // ページ読込後に実行
-
-  var max_col = 11;
-  var max_row = 20;
-  var init_col = new Array(max_col).fill(null);
+  console.log("====== PAGE LOAD ======");
+  var cheader = <%= Constants::HD.values %>;
+  var max_col = cheader.length;
+  var max_row = 500;
+  var col_option = [];
   var init_data = new Array(max_row);
   for(let x = 0; x < max_row; x++){
+    var init_col = new Array(max_col);
     init_data[x] = init_col;
   }
-  console.log("===== DEBUG ======");
+  for(var p = 0; p < max_col; p++){
+    col_option[p] = { type: 'text', className: "htMiddle"};
+  }
+  col_option[1] = {renderer: 'html', className: "htCenter htMiddle"}
+
   var container = document.getElementById('main');
   var handsontable = new Handsontable(container, {
     /* オプション */
@@ -17,35 +23,33 @@ document.addEventListener("DOMContentLoaded", function() {
     contextMenu: true,
     data: init_data,
     rowHeaders: true,
-    colHeaders: ["ヤフオク商品URL","商品タイトル","オークションID","現在価格","即決価格","状態","入札件数","残り時間","画像1","画像2","画像3"],
+    colHeaders: cheader,
     maxCols: max_col,
     maxRows: max_row,
     manualColumnResize: true,
     autoColumnSize: false,
-    colWidths:[200,300,150,120,120,120,120,120,120,120,120]
+    colWidths:[200,100,300,150,120,120,120,120,120,120,120,120,120,120,120,120,120,200],
+    columns: col_option
   });
 
   <% header = Constants::AH %>
-
-  console.log(<%= header %>);
   var idata = <%= header %>;
 
   var csv_container = document.getElementById('csv');
   var csv_handsontable = new Handsontable(csv_container, {
     /* オプション */
-    width: 980,
+    width: 1180,
     height: 240,
     data: idata,
     contextMenu: true,
     rowHeaders: true,
     colHeaders: true,
-    maxRows: max_row,
     manualColumnResize: true,
     autoColumnSize: false,
     wordWrap: false
   });
 
-  csv_handsontable.alter('insert_row', [].length, 10);
+  csv_handsontable.alter('insert_row', idata.length, 10);
 
   var selected_container = document.getElementById('selected');
   var init = [];
@@ -74,5 +78,314 @@ document.addEventListener("DOMContentLoaded", function() {
     selected_handsontable.loadData(res);
     selected_handsontable.render();
   }, csv_handsontable);
+
+  $("#done").click(function () {
+    var orgData = handsontable.getData();
+    var urlnum = 0;
+    var pbar = document.getElementById('progressbar');
+    pbar.style.width = "0%";
+
+    while(orgData[urlnum][0] != "" && orgData[urlnum][0] != null){
+      urlnum += 1;
+    }
+    var counter = 0;
+    alert("データ取得開始");
+    repajax(counter, urlnum);
+  });
+
+  function repajax(counter, urlnum){
+    var step = 2;
+    var stnum = step * counter;
+    var ennum = step * (counter + 1);
+    var orgData = handsontable.getData();
+    var sdata = orgData.slice(stnum, ennum);
+
+    var pbar = document.getElementById('progressbar');
+    var sendData = [sdata, counter];
+    sendData = JSON.stringify(sendData);
+    sendData = {data: sendData};
+    $.ajax({
+      url: "/products/search",
+      async: true,
+      type: "POST",
+      data: sendData,
+      dataType: 'json',
+      success: function (response) {
+
+        var new_data = orgData;
+        for(var cc = 0; cc < step; cc++){
+          new_data[stnum + cc] = response[cc];
+        }
+
+        handsontable.loadData(new_data);
+        handsontable.render();
+
+        counter = counter + 1;
+        if(counter * step > urlnum){
+          console.log("-------------END-------------");
+          counter = urlnum;
+          var parcent = Math.round(counter * step / urlnum * 100);
+          pbar.style.width = parcent + "%";
+          alert("取得完了!");
+          var result = true;
+          return;
+        }else{
+          console.log("-------------CONTINUE-------------");
+          var parcent = Math.round(counter * step / urlnum * 100);
+          pbar.style.width = parcent + "%";
+          var result = true;
+          repajax(counter, urlnum);
+        }
+      },
+      error: function (myData) {
+        var result = false;
+        alert("NG");
+      }
+    });
+  }
+
+  $("#make_csv").click(function () {
+    $.ajax({
+      url: "/products/set_csv",
+      type: "POST",
+      data: "",
+      dataType: 'json',
+      success: function (response) {
+        console.log("===========================");
+        console.log(response);
+
+        var itemData = handsontable.getData();
+        var header = csv_handsontable.getData();
+        var headernum = 3;
+
+        var ttime = new Date();
+        var mm = (ttime.getMonth()+1).toString(10);
+        var dd = ttime.getDate().toString(10);
+        var hh = ttime.getHours().toString(10);
+        var mi = ttime.getMinutes().toString(10);
+
+        mm = ("0" + mm).slice(-2);
+        dd = ("0" + dd).slice(-2);
+        hh = ("0" + hh).slice(-2);
+        mi = ("0" + mi).slice(-2);
+
+        var chead =  mm + dd + hh + mi;
+        var itemnum = 0;
+
+        for(var k = 0; k < itemData.length; k++){
+          if(itemData[k][0] == "" || itemData[k][0] == null){
+            itemnum = k;
+            break;
+          }
+        }
+        console.log(itemnum);
+
+        var ftable = response['fixed'];
+        var ptable = response['price'];
+        var ttable = response['title'];
+        var ntable = response['ng'];
+        var ktable = response['keyword'];
+
+        console.log("----------------------------");
+
+        var headerhash = {};
+        var newdata = [];
+        for(var i = 0; i < headernum; i++){
+          newdata[i] = header[i];
+          if(i == 2){
+            for(var k = 0; k < header[i].length; k++){
+              headerhash[header[i][k]] = k;
+            }
+          }
+        }
+
+        var khash = {};
+        var fhash = {};
+
+        for(var k = 0; k < ftable.length; k++){
+          fhash[ftable[k][0]] = ftable[k][2];
+        }
+
+        for(var k = 0; k < ktable.length; k++){
+          var temp = [];
+          temp[0] = ktable[k][1];
+          temp[1] = ktable[k][2];
+          temp[2] = ktable[k][3];
+          temp[3] = ktable[k][4];
+          khash[ktable[k][0]] = temp;
+        }
+
+        //CSV作成
+        var i = 0;
+        console.log(itemnum);
+        if(itemnum != 0){
+          for(var t = 0; t < itemnum; t++){
+            console.log("----seller----");
+            var seller = itemData[t][17];
+            console.log(seller);
+            console.log(ntable)
+            console.log(ntable.indexOf(seller))
+            //NGセラーのチェック
+            if(ntable.indexOf(seller) == -1){
+              // 存在する
+              newdata[i + headernum] = [];
+              for(var j = 0; j < header[2].length; j++){
+                newdata[i + headernum][j] = "";
+              }
+
+              var judge = false;
+              var n = 0;
+              var ch = [];
+
+              for(key in khash){
+                var indv = key.split(" ")
+                var ch = [];
+                for(var y = 0; y < indv.length; y++){
+                  if(indv[y] == ""){
+                    break;
+                  }else{
+                    ch[y] = itemData[t][2].toUpperCase().indexOf(indv[y].toUpperCase());
+                  }
+                }
+                if(Math.max.apply(null,ch) > -1){
+                  var gh = khash[key];
+                  judge = true;
+                  break;
+                }
+              }
+              //alert(judge);
+              var price = Number(itemData[t][5]);
+
+              if(price == 0){
+                price = Number(itemData[t][4]);
+              }
+
+              for(var m = 0; m < ptable.length; m++){
+                if(Number(ptable[m][0]) > price){
+                  price = Number(ptable[m - 1][1]) + (Number(ptable[m][1]) - Number(ptable[m - 1][1]))/(Number(ptable[m][0]) - Number(ptable[m - 1][0])) * (price - Number(ptable[m - 1][0]));
+                  price = Math.round(price,0);
+                  break;
+                }
+              }
+              var newname = itemData[t][2];
+
+              for(var m = 0; m < ttable.length; m++){
+                if(ttable[m][0] != ""){
+                  while (newname.indexOf(ttable[m][0]) >= 0) {
+                    if(ttable[m][1] == "space"){
+                      newname = newname.replace(ttable[m][0]," ");
+                      newname = newname.trim();
+                    }else{
+                      newname = newname.replace(ttable[m][0],ttable[m][1]);
+                      newname = newname.trim();
+                    }
+                  }
+                }
+              }
+
+              newdata[i + headernum][headerhash['item_sku']] = itemData[t][3];
+              newdata[i + headernum][headerhash['item_name']] = newname;
+              newdata[i + headernum][headerhash['standard_price']] = price;
+              newdata[i + headernum][headerhash['main_image_url']] = itemData[t][9];
+              newdata[i + headernum][headerhash['other_image_url1']] = itemData[t][10];
+              newdata[i + headernum][headerhash['other_image_url2']] = itemData[t][11];
+              newdata[i + headernum][headerhash['other_image_url3']] = itemData[t][12];
+              newdata[i + headernum][headerhash['other_image_url4']] = itemData[t][13];
+              newdata[i + headernum][headerhash['other_image_url5']] = itemData[t][14];
+              newdata[i + headernum][headerhash['other_image_url6']] = itemData[t][15];
+              newdata[i + headernum][headerhash['other_image_url7']] = itemData[t][16];
+
+              for(var tt = 0; tt < ftable.length; tt++){
+                if(ftable[tt][0] in headerhash){
+                  newdata[i + headernum][headerhash[ftable[tt][0]]] = ftable[tt][2];
+                }
+              }
+
+              if(judge == true){
+                newdata[i + headernum][headerhash['brand_name']] = gh[0];
+                newdata[i + headernum][headerhash['manufacturer']] = gh[1];
+                newdata[i + headernum][headerhash['recommended_browse_nodes']] = gh[2];
+                newdata[i + headernum][headerhash['generic_keywords']] = gh[3];
+              }
+              var tnum = ("0000" + i).slice(-4);
+              var a = Math.floor( Math.random() * (100 + 1 - 1) ) + 1 ;
+              var rnum = ("0000" + a).slice(-4);
+
+              newdata[i + headernum][headerhash['part_number']] = rnum + tnum;
+              newdata[i + headernum][headerhash['model']] = rnum + tnum;
+              newdata[i + headernum][headerhash['product_description']] = newname + "です。";
+              newdata[i + headernum][headerhash['bullet_point1']] = newname + "です。";
+              newdata[i + headernum][headerhash['update_delete']] = "Update";
+              newdata[i + headernum][headerhash['standard_price_points']] = Math.round(fhash['standard_price_points']*price/100,0);
+              i++;
+
+            }
+          }
+        }
+        csv_handsontable.loadData(newdata);
+        console.log(newdata);
+        alert("CSV作成");
+      },
+      error: function (myData) {
+        alert("NG");
+      }
+    });
+  });
+
+  $("#csv_output").click(function () {
+    var tempData = csv_handsontable.getData();
+    var csvdata = "";
+
+    for(var k = 0; k < tempData.length; k++){
+      csvdata = csvdata + tempData[k].join("\t") + "\n";
+    }
+
+    var str_array = Encoding.stringToCode(csvdata);
+    var sjis_array = Encoding.convert(str_array, "SJIS", "UNICODE");
+    var uint8_array = new Uint8Array(sjis_array);
+
+    var ttime = new Date();
+    var yy = (ttime.getYear()).toString(10);
+    var mm = (ttime.getMonth()+1).toString(10);
+    var dd = ttime.getDate().toString(10);
+    var hh = ttime.getHours().toString(10);
+    var mi = ttime.getMinutes().toString(10);
+    var ss = ttime.getSeconds().toString(10);
+
+    mm = ("0" + mm).slice(-2);
+    dd = ("0" + dd).slice(-2);
+    hh = ("0" + hh).slice(-2);
+    mi = ("0" + mi).slice(-2);
+    ss = ("0" + ss).slice(-2);
+
+    var chead =  yy + mm + dd + hh + mi + ss;
+    var blob = new Blob([uint8_array], { "type" : "text/tsv" });
+    var fname = "アマゾン新規出品_" + chead + ".txt"
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, fname);
+        // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+        window.navigator.msSaveOrOpenBlob(blob, fname);
+    } else {
+        document.getElementById("csv_output").href = window.URL.createObjectURL(blob);
+    }
+  });
+
+  $("#csv_upload").click(function () {
+    var tempData = csv_handsontable.getData();
+    tempData = JSON.stringify(tempData);
+    myData = {data: tempData};
+    $.ajax({
+      url: "/products/upload",
+      type: "POST",
+      data: myData,
+      dataType: 'json',
+      success: function (myData) {
+        alert("アップロード受け付けました");
+      },
+      error: function (myData) {
+        //alert("NG");
+      }
+    });
+  });
 
 });

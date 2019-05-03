@@ -106,6 +106,12 @@
     <header class="sticky-top">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
+
+          <a class="navbar-brand" href="/products/show" data-turbolinks="false" >
+            <%= image_tag("ship.png", :height => '60px', :alt => "Amaport", :style => 'margin-bottom:5px;') %>
+            Amaport
+          </a>
+
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -117,6 +123,9 @@
               </li>
               <li class="nav-item">
                 <%= link_to "ツール設定", "/products/setup", class: "nav-link", data: {"turbolinks" => false} %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "MWSアカウント設定", "/products/prepare", class: "nav-link", data: {"turbolinks" => false} %>
               </li>
               <li class="nav-item">
                 <a href="/users/sign_out" class="nav-link">ログアウト</a>

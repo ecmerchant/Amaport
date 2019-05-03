@@ -3,19 +3,19 @@
     <div class="row my-4">
       <div class="col-12">
         <h2>Amaport<small style="margin-left:20px;">アマゾン出品支援ツール</small></h2>
-        <h4><strong>ヤフオクから情報取得</strong></h4>
-        <button id="done" class="btn btn-primary" style="margin-right:20px;">ヤフオク情報取得</button>
-        <button id="make_csv" class="btn btn-primary" style="margin-right:20px;">CSV作成</button>
-        <% @tt=Time.now.strftime("_%H%M%S") %>
-        <a href="#" id="csv_output" download="list<%= @tt %>.txt" class="btn btn-warning" style="margin-right:20px;">CSV出力</a>
-        <button id="csv_upload" class="btn btn-danger" style="margin-right:20px;">アップロード</button>
+        <h4><strong>仕入れ先から情報取得</strong></h4>
+        <button id="done" class="btn btn-primary" style="margin-right:20px;">情報取得開始</button>
+        <button id="make_csv" class="btn btn-info" style="margin-right:20px;">出品データ作成</button>
+        <% @tt = Time.now.strftime("_%Y%m%D%H%M%S") %>
+        <a href="#" id="csv_output" download="アマゾン新規出品<%= @tt %>.txt" class="btn btn-primary" style="margin-right:20px;">ファイル出力</a>
+        <button id="csv_upload" class="btn btn-info" style="margin-right:20px;">アップロード</button>
         <br>
         <div class="progress progress-striped active"  style="margin-top:20px; width:60%;">
           <div class="progress-bar" style="width: 0%" id="progressbar"></div>
         </div>
         <div id="main"></div>
         <br>
-        <h4><strong>アップロードCSVの確認</strong></h4>
+        <h4><strong>出品用ファイルの確認</strong></h4>
         <div id="selected"></div>
         <div id="csv"></div>
       </div>
