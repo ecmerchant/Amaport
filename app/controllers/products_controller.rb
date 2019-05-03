@@ -23,8 +23,6 @@ class ProductsController < ApplicationController
         url = row[0]
         if url != nil then
           buf = Array.new
-          buf = row
-          buf[1] = "test"
           if url.include?("auctions.yahoo") then
             logger.debug("====== Yahoo Auction =======")
 
@@ -182,8 +180,82 @@ class ProductsController < ApplicationController
               end
             end
             buf.push(seller_id)
-          elsif url.include?("otamrt") then
-            logger.debug("====== Otamat =======")
+
+          elsif url.include?("otamart") then
+            logger.debug("====== Otamart =======")
+
+            if url[-1] != "/" then
+              url = url + "/"
+            end
+            logger.debug(url)
+            option = {
+              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36"
+            }
+            html = open(url, option) do |f|
+              charset = f.charset # 文字種別を取得
+              f.read # htmlを読み込んで変数htmlに渡す
+            end
+            logger.debug("=== URL OK ===")
+            doc = Nokogiri::HTML.parse(html, nil, charset)
+            #商品が出品中の場合
+            if /"original":\{([\s\S]*?)original/.match(html) != nil then
+              logger.debug("========= OPEN ==========")
+              original = /"original":\{([\s\S]*?)original/.match(html)[1]
+              title = /"original":\{"name":"([\s\S]*?)"/.match(html)[1]
+              tags = /"tags":\[([\s\S]*?)\]/.match(original)[1]
+              tags = tags.gsub('"','')
+            else
+              logger.debug("========= CLOSE ==========")
+              title = /"name":"([\s\S]*?)"/.match(html)[1]
+            end
+            logger.debug("========= INFO ==========")
+            item_id = /items\/([\s\S]*?)\//.match(url)[1]
+            price = /"price":([\s\S]*?),/.match(html)[1]
+
+            condition = /Condition<\/div>([\s\S]*?)<\/div>/.match(html)[1]
+            condition = />([\s\S]*?)$/.match(condition)[1]
+            delivery = /"delivery_delay_type":([\s\S]*?),/.match(html)[1]
+
+            if delivery.to_i == 1 then
+              delivery = "2~3日で出荷"
+            elsif delivery.to_i == 2 then
+              delivery = "4~7日で出荷"
+            else
+              delivery = "8日以上で出荷"
+            end
+
+            seller = /"seller":\{([\s\S]*?)\}/.match(html)[1]
+            seller_name = /"name":"([\s\S]*?)"/.match(seller)[1]
+
+            image_set = /class="item-picture-viewer"([\s\S]*?)class="item-name"/.match(html)[1]
+            #images = /src="([\s\S]*?)"/g.match(images_set)
+            images = image_set.scan(/src="([\s\S]*?)"/)
+
+            k = 0
+            image = []
+            while k < 8
+              if images[k] != nil then
+                image[k] = images[k]
+              else
+                image[k] = ""
+              end
+              k += 1
+            end
+
+            if image[0] != nil then
+              im = '<img src="' + image[0].to_s  + '" style="height: 50px; margin:auto" >'
+            else
+              im = ''
+            end
+            buf = [url, im, title, item_id, price, 0, condition, "-", "-"]
+            (0..7).each do |int|
+              if image[int] != nil then
+                buf.push(image[int])
+              else
+                buf.push("")
+              end
+            end
+            buf.push(seller_name)
           elsif url.include?("fril") then
             logger.debug("====== Fril =======")
           end
