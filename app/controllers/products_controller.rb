@@ -189,53 +189,38 @@ class ProductsController < ApplicationController
             end
             logger.debug(url)
             option = {
-              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36"
+              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
+              "Connection" => "keep-alive",
+              "Accept" => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3'
             }
             html = open(url, option) do |f|
               charset = f.charset # 文字種別を取得
               f.read # htmlを読み込んで変数htmlに渡す
             end
+            logger.debug(html)
             logger.debug("=== URL OK ===")
             doc = Nokogiri::HTML.parse(html, nil, charset)
-            #商品が出品中の場合
-            if /"original":\{([\s\S]*?)original/.match(html) != nil then
-              logger.debug("========= OPEN ==========")
-              original = /"original":\{([\s\S]*?)original/.match(html)[1]
-              title = /"original":\{"name":"([\s\S]*?)"/.match(html)[1]
-              tags = /"tags":\[([\s\S]*?)\]/.match(original)[1]
-              tags = tags.gsub('"','')
-            else
-              logger.debug("========= CLOSE ==========")
-              title = /"name":"([\s\S]*?)"/.match(html)[1]
-            end
+
+            title = /"name": "([\s\S]*?)"/.match(html)[1]
+
             logger.debug("========= INFO ==========")
             item_id = /items\/([\s\S]*?)\//.match(url)[1]
-            price = /"price":([\s\S]*?),/.match(html)[1]
+            price = /"price": "([\s\S]*?)"/.match(html)[1]
 
-            condition = /Condition<\/div>([\s\S]*?)<\/div>/.match(html)[1]
-            condition = />([\s\S]*?)$/.match(condition)[1]
-            delivery = /"delivery_delay_type":([\s\S]*?),/.match(html)[1]
+            condition = /<p>商品の状態<\/p>([\s\S]*?)<\/div>/.match(html)[1]
+            condition = /<p>([\s\S]*?)<\/p>/.match(condition)[1]
 
-            if delivery.to_i == 1 then
-              delivery = "2~3日で出荷"
-            elsif delivery.to_i == 2 then
-              delivery = "4~7日で出荷"
-            else
-              delivery = "8日以上で出荷"
-            end
+            seller = /"seller": \{([\s\S]*?)\}/.match(html)[1]
+            seller_name = /"name": "([\s\S]*?)"/.match(seller)[1]
 
-            seller = /"seller":\{([\s\S]*?)\}/.match(html)[1]
-            seller_name = /"name":"([\s\S]*?)"/.match(seller)[1]
-
-            image_set = /class="item-picture-viewer"([\s\S]*?)class="item-name"/.match(html)[1]
-            #images = /src="([\s\S]*?)"/g.match(images_set)
+            image_set = /class="item-thumbnail"([\s\S]*?)class="item-detail/.match(html)[1]
             images = image_set.scan(/src="([\s\S]*?)"/)
 
             k = 0
             image = []
             while k < 8
               if images[k] != nil then
-                image[k] = images[k]
+                image[k] = images[k][0].gsub("-thumbnail", "")
               else
                 image[k] = ""
               end
