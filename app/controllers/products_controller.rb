@@ -21,7 +21,7 @@ class ProductsController < ApplicationController
       data.each_with_index do |row|
         logger.debug(row)
         url = row[0]
-        if url != nil then
+        if url != nil && url != '' then
           buf = Array.new
           if url.include?("auctions.yahoo") then
             logger.debug("====== Yahoo Auction =======")
@@ -197,11 +197,11 @@ class ProductsController < ApplicationController
               charset = f.charset # 文字種別を取得
               f.read # htmlを読み込んで変数htmlに渡す
             end
-            logger.debug(html)
-            logger.debug("=== URL OK ===")
-            doc = Nokogiri::HTML.parse(html, nil, charset)
 
             title = /"name": "([\s\S]*?)"/.match(html)[1]
+            if html.include?("売り切れました") then
+              title = "[終了済み] " + title
+            end
 
             logger.debug("========= INFO ==========")
             item_id = /items\/([\s\S]*?)\//.match(url)[1]
@@ -241,8 +241,64 @@ class ProductsController < ApplicationController
               end
             end
             buf.push(seller_name)
+
           elsif url.include?("fril") then
             logger.debug("====== Fril =======")
+            option = {
+              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
+              "Connection" => "keep-alive",
+              "Accept" => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3'
+            }
+            html = open(url, option) do |f|
+              charset = f.charset # 文字種別を取得
+              f.read # htmlを読み込んで変数htmlに渡す
+            end
+
+            title = /<h1 class="item__name">([\s\S]*?)<\/h1>/.match(html)[1]
+
+            logger.debug("========= INFO ==========")
+            item_id = /jp\/([\s\S]*?)$/.match(url)[1]
+            price = /"price": "([\s\S]*?)"/.match(html)[1]
+
+            if /商品の状態<\/th>([\s\S]*?)<\/tr>/.match(html) != nil then
+              condition = /商品の状態<\/th>([\s\S]*?)<\/tr>/.match(html)[1]
+              condition = /<td>([\s\S]*?)<\/td>/.match(condition)[1]
+            else
+              condition = "-"
+              title = "[終了済み] " + title
+            end
+
+            seller_name = /user-name">([\s\S]*?)</.match(html)[1]
+
+            image_set = /<div class="sp-slides">([\s\S]*?)<section/.match(html)[1]
+            images = image_set.scan(/src="([\s\S]*?)"/)
+
+            k = 0
+            image = []
+            while k < 8
+              if images[k] != nil then
+                image[k] = images[k][0].gsub("-thumbnail", "")
+              else
+                image[k] = ""
+              end
+              k += 1
+            end
+
+            if image[0] != nil then
+              im = '<img src="' + image[0].to_s  + '" style="height: 50px; margin:auto" >'
+            else
+              im = ''
+            end
+            buf = [url, im, title, item_id, price, 0, condition, "-", "-"]
+            (0..7).each do |int|
+              if image[int] != nil then
+                buf.push(image[int])
+              else
+                buf.push("")
+              end
+            end
+            buf.push(seller_name)
+
           end
         end
         result.push(buf)

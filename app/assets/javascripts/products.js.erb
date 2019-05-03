@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   col_option[1] = {renderer: 'html', className: "htCenter htMiddle"}
 
+  for(var p = 4; p < 9; p++){
+    col_option[p] = { type: 'text', className: "htCenter htMiddle"};
+  }
+
   var container = document.getElementById('main');
   var handsontable = new Handsontable(container, {
     /* オプション */
@@ -121,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
         handsontable.render();
 
         counter = counter + 1;
-        if(counter * step > urlnum){
+        if(counter * step >= urlnum){
           console.log("-------------END-------------");
           counter = urlnum;
           var parcent = Math.round(counter * step / urlnum * 100);
@@ -316,14 +320,13 @@ document.addEventListener("DOMContentLoaded", function() {
               newdata[i + headernum][headerhash['product_description']] = newname + "です。";
               newdata[i + headernum][headerhash['bullet_point1']] = newname + "です。";
               newdata[i + headernum][headerhash['update_delete']] = "Update";
-              newdata[i + headernum][headerhash['standard_price_points']] = Math.round(fhash['standard_price_points']*price/100,0);
+              newdata[i + headernum][headerhash['standard_price_points']] = Math.round(fhash['standard_price_points'].to_i * price.to_f / 100, 0);
               i++;
 
             }
           }
         }
         csv_handsontable.loadData(newdata);
-        console.log(newdata);
         alert("CSV作成");
       },
       error: function (myData) {
