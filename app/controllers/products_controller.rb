@@ -346,7 +346,7 @@ class ProductsController < ApplicationController
       end
     end
 
-    @pdata = PriceTable.where(user_id: user_id).group(:buy_price, :sell_price).pluck(:buy_price, :sell_price).to_json.html_safe
+    @pdata = PriceTable.where(user_id: user_id).order("buy_price ASC NULLS LAST").group(:buy_price, :sell_price).pluck(:buy_price, :sell_price).to_json.html_safe
     @fdata = ListingTemplate.where(user_id: user_id).group(:key, :caption, :value).pluck(:key, :caption, :value).to_json.html_safe
     @tdata = ReplaceTable.where(user_id: user_id).group(:from_keyword, :to_keyword).pluck(:from_keyword, :to_keyword).to_json.html_safe
     @kdata = KeywordSet.where(user_id: user_id).group(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).pluck(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).to_json.html_safe

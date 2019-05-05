@@ -6,12 +6,12 @@
         <h2>ツールの各種設定</h2><button id="setup_data" class="btn btn-primary" style="margin-left:30px; margin-bottom:10px;">設定を反映する</button>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-8">
         <hr class="my-4">
         <h4>定型パラメータの設定</h4>
         <div id="fix_table"></div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-4">
         <hr class="my-4">
         <h4>除外セラーの設定</h4>
         <div id="ng_seller_table"></div>
@@ -63,7 +63,6 @@
   }
 
   if(fdata.length == 0){
-    var fdata = [];
     var rnum = 10;
     for(var i = 0; i < rnum; i++){
       fdata[i] = [];
@@ -112,7 +111,8 @@
     autoColumnSize: false,
     colWidths:[200, 200]
   });
-
+  console.log("-------------");
+  console.log(fdata);
   var fix_container = document.getElementById('fix_table');
   var fix_handsontable = Handsontable(fix_container, {
     /* オプション */
@@ -122,11 +122,11 @@
     contextMenu: true,
     rowHeaders: true,
     colHeaders: ["項目名","説明","値"],
-    maxCols: maxColnum,
+    maxCols: 3,
     maxRows: maxRownum,
     manualColumnResize: true,
     autoColumnSize: false,
-    colWidths:[250, 250, 250]
+    colWidths:[200, 220, 230]
   });
 
 
@@ -202,7 +202,6 @@
     colWidths:[200, 250, 250, 450, 400]
   });
 
-  console.log(ndata);
   if(ndata.length == 0){
     var mnum = 500;
     for(var i = 0; i < mnum; i++){
@@ -216,7 +215,6 @@
       ndata[i][0] = "";
     }
   }
-  console.log(ndata);
 
   var ng_seller_container = document.getElementById('ng_seller_table');
   var ng_seller_handsontable = Handsontable(ng_seller_container, {
@@ -231,7 +229,7 @@
     maxRows: maxRownum,
     manualColumnResize: true,
     autoColumnSize: false,
-    colWidths:[300]
+    colWidths:[250]
   });
 
   $("#setup_data").click(function () {
