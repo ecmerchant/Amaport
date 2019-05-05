@@ -338,11 +338,48 @@ class ProductsController < ApplicationController
     @replace_tables = ReplaceTable.where(user_id: user_id)
 
     if @price_tables.length == 0 then
-      (0..29).each do |int|
-        PriceTable.create(user_id: user_id, buy_price: int * 1000, sell_price: int * 1000 + 2980)
-      end
-      (0..19).each do |int|
-        PriceTable.create(user_id: user_id, buy_price: int * 10000 + 30000, sell_price: int * 10000 + 32980)
+      init = Array.new
+      init.push([1,2980])
+      init.push([1000,3980])
+      init.push([2000,5980])
+      init.push([3000,7800])
+      init.push([4000,9800])
+      init.push([5000,12000])
+      init.push([6000,12000])
+      init.push([7000,14000])
+      init.push([8000,16000])
+      init.push([9000,18000])
+      init.push([10000,20000])
+      init.push([11000,22000])
+      init.push([12000,24000])
+      init.push([13000,26000])
+      init.push([14000,28000])
+      init.push([15000,30000])
+      init.push([16000,32000])
+      init.push([17000,34000])
+      init.push([18000,36000])
+      init.push([19000,38000])
+      init.push([20000,40000])
+      init.push([21000,42000])
+      init.push([22000,44000])
+      init.push([23000,46000])
+      init.push([24000,48000])
+      init.push([25000,50000])
+      init.push([26000,52000])
+      init.push([27000,54000])
+      init.push([28000,56000])
+      init.push([29000,58000])
+      init.push([30000,60000])
+      init.push([40000,80000])
+      init.push([50000,100000])
+      init.push([60000,120000])
+      init.push([70000,140000])
+      init.push([80000,160000])
+      init.push([90000,180000])
+      init.push([100000,200000])
+
+      init.each do |row|
+        PriceTable.create(user_id: user_id, buy_price: row[0], sell_price: row[1])
       end
     end
 
