@@ -21,8 +21,10 @@ class ProductsController < ApplicationController
       logger.debug("No. " + counter.to_s)
       logger.debug(data)
       result = Array.new
-      data.each_with_index do |row|
+      data.each_with_index do |row, index|
+        logger.debug("+++++++++++++++++++++++++++++++++")
         logger.debug(row)
+        buf = nil
         url = row[0]
         if url != nil && url != '' then
           buf = Array.new
@@ -273,18 +275,29 @@ class ProductsController < ApplicationController
 
             seller_name = /user-name">([\s\S]*?)</.match(html)[1]
 
-            image_set = /<div class="sp-slides">([\s\S]*?)<section/.match(html)[1]
-            images = image_set.scan(/src="([\s\S]*?)"/)
+            image_set = /<div class="sp-slides">([\s\S]*?)<section/.match(html)
+            if image_set != nil then
+              image_set = image_set[1]
+              images = image_set.scan(/src="([\s\S]*?)"/)
 
-            k = 0
-            image = []
-            while k < 8
-              if images[k] != nil then
-                image[k] = images[k][0].gsub("-thumbnail", "")
-              else
-                image[k] = ""
+              k = 0
+              image = []
+              while k < 8
+                if images[k] != nil then
+                  image[k] = images[k][0].gsub("-thumbnail", "")
+                else
+                  image[k] = ""
+                end
+                k += 1
               end
-              k += 1
+            else
+              image = []
+              image_set = /<div id="photoFrame([\s\S]*?)<div/.match(html)
+              if image_set != nil then
+                image[0] = /src="([\s\S]*?)"/.match(image_set[0])[1]
+              else
+                image[0] = nil
+              end
             end
 
             if image[0] != nil then
@@ -304,8 +317,17 @@ class ProductsController < ApplicationController
 
           end
         end
-        result.push(buf)
+        if buf != nil then
+          result.push(buf)
+        else
+          buf = Array.new
+          (0..17).each do |pp|
+            buf.push('')
+          end
+          result.push(buf)
+        end
       end
+      logger.debug("----------------------")
       logger.debug(result)
       render json: result
     end

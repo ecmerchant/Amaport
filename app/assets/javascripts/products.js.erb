@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", function() {
               newdata[i + headernum][headerhash['product_description']] = newname + "です。";
               newdata[i + headernum][headerhash['bullet_point1']] = newname + "です。";
               newdata[i + headernum][headerhash['update_delete']] = "Update";
-              newdata[i + headernum][headerhash['standard_price_points']] = Math.round(fhash['standard_price_points'].to_i * price.to_f / 100, 0);
+              newdata[i + headernum][headerhash['standard_price_points']] = Math.round(fhash['standard_price_points'] * price / 100, 0);
               i++;
 
             }
