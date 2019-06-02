@@ -355,7 +355,7 @@ class ProductsController < ApplicationController
     user_id = current_user.id
     @keyword_sets = KeywordSet.where(user_id: user_id)
     @listing_templates = ListingTemplate.where(user_id: user_id)
-    @ng_sellers = NgSeller.where(user_id: user_id)
+    @ng_sellers = NgSeller.where(user_id: user_id).order("id ASC")
     @price_tables = PriceTable.where(user_id: user_id).order("buy_price ASC NULLS LAST")
     @replace_tables = ReplaceTable.where(user_id: user_id)
 
@@ -409,11 +409,14 @@ class ProductsController < ApplicationController
     @fdata = ListingTemplate.where(user_id: user_id).group(:key, :caption, :value).pluck(:key, :caption, :value).to_json.html_safe
     @tdata = ReplaceTable.where(user_id: user_id).group(:from_keyword, :to_keyword).pluck(:from_keyword, :to_keyword).to_json.html_safe
     @kdata = KeywordSet.where(user_id: user_id).group(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).pluck(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).to_json.html_safe
-    temp = NgSeller.where(user_id: user_id).group(:seller_id).pluck(:seller_id)
+    temp = NgSeller.where(user_id: user_id).group(:id, :seller_id).pluck(:id, :seller_id)
+    sorted = temp.sort {|a, b|
+      a[0] <=> b[0] # 価格ソート
+    }
     buf = Array.new
-    temp.each do |tp|
+    sorted.each do |tp|
       tt = Array.new
-      tt[0] = tp
+      tt[0] = tp[1]
       buf.push(tt)
     end
     @ndata = buf.to_json.html_safe
@@ -445,6 +448,7 @@ class ProductsController < ApplicationController
       end
 
       #除外セラーの設定
+      NgSeller.where(user_id: user_id).delete_all
       ndata.each do |nd|
         nkey = nd[0]
         if nkey != nil && nkey != '' then
