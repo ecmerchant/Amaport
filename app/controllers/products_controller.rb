@@ -442,8 +442,6 @@ class ProductsController < ApplicationController
             caption: fcp,
             value: fvl
           )
-        else
-          break
         end
       end
 
@@ -453,8 +451,6 @@ class ProductsController < ApplicationController
         nkey = nd[0]
         if nkey != nil && nkey != '' then
           temp = NgSeller.find_or_create_by(user_id: user_id, seller_id: nkey)
-        else
-          break
         end
       end
 
@@ -470,8 +466,6 @@ class ProductsController < ApplicationController
             recommended_browse_nodes: kd[3],
             generic_keywords: kd[4]
           )
-        else
-          break
         end
       end
 
@@ -483,8 +477,6 @@ class ProductsController < ApplicationController
           temp.update(
             sell_price: kd[1]
           )
-        else
-          break
         end
       end
 
@@ -497,8 +489,6 @@ class ProductsController < ApplicationController
           temp.update(
             to_keyword: kd[1]
           )
-        else
-          break
         end
       end
       redirect_to products_setup_path
