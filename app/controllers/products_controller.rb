@@ -459,6 +459,7 @@ class ProductsController < ApplicationController
       end
 
       #キーワードの設定
+      KeywordSet.where(user_id: user_id).delete_all
       kdata.each do |kd|
         nkey = kd[0]
         if nkey != nil && nkey != '' then
@@ -488,6 +489,7 @@ class ProductsController < ApplicationController
       end
 
       #置換テーブルの設定
+      ReplaceTable.where(user_id: user_id).delete_all
       tdata.each do |kd|
         nkey = kd[0]
         if nkey != nil && nkey != '' then
