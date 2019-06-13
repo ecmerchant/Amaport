@@ -564,6 +564,24 @@ class ProductsController < ApplicationController
     end
   end
 
+  def check
+    email = params[:email]
+    password = params[:password]
+    if email != nil then
+      user = User.find_by(email: email)
+      if user != nil then
+        if user.valid_password?(password) then
+          render :text => "success", :status => 200
+        else
+          render :text => "failed", :status => 404
+        end
+      else
+        render :text => "failed", :status => 404
+      end
+    else
+      render :text => "failed", :status => 404
+    end
+  end
 
   private
   def account_params
