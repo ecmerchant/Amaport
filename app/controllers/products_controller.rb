@@ -571,15 +571,15 @@ class ProductsController < ApplicationController
       user = User.find_by(email: email)
       if user != nil then
         if user.valid_password?(password) then
-          render :text => "success", :status => 200
+          render json: { message: "success" }, :status => 200
         else
-          render :text => "failed", :status => 404
+          render json: { message: "failed" }, :status => 404
         end
       else
-        render :text => "failed", :status => 404
+        render json: { message: "failed" }, :status => 404
       end
     else
-      render :text => "failed", :status => 404
+      render json: { message: "failed" }, :status => 404
     end
   end
 
