@@ -3,8 +3,8 @@ class ProductsController < ApplicationController
   require 'open-uri'
   require 'peddler'
 
-  before_action :authenticate_user!, :except => [:regist]
-  protect_from_forgery :except => [:regist]
+  before_action :authenticate_user!, :except => [:regist, :check]
+  protect_from_forgery :except => [:regist, :check]
 
   def show
     @login_user = current_user
