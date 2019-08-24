@@ -261,9 +261,12 @@ class ProductsController < ApplicationController
 
             title = /<h1 class="item__name">([\s\S]*?)<\/h1>/.match(html)[1]
 
+            #temp = /name="viewport"([\s\S]*?)twitter/.match(html)[1]
+            #logger.debug(temp)
+            #return
             logger.debug("========= INFO ==========")
             item_id = /jp\/([\s\S]*?)$/.match(url)[1]
-            price = /"price": "([\s\S]*?)"/.match(html)[1]
+            price = /property="product:price:amount" content="([\s\S]*?)"/.match(html)[1]
 
             if /商品の状態<\/th>([\s\S]*?)<\/tr>/.match(html) != nil then
               condition = /商品の状態<\/th>([\s\S]*?)<\/tr>/.match(html)[1]
