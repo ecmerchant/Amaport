@@ -473,6 +473,7 @@ class ProductsController < ApplicationController
       end
 
       #価格の設定
+      PriceTable.where(user_id: user_id).delete_all
       pdata.each do |kd|
         nkey = kd[0]
         if nkey != nil && nkey != '' then
