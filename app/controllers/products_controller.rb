@@ -425,11 +425,11 @@ class ProductsController < ApplicationController
 =end
 
     temp = NgSeller.where(user_id: user_id).order("id ASC").group(:id, :seller_id).pluck(:id, :seller_id)
-    sorted = temp.sort {|a, b|
-      a[0] <=> b[0] # 価格ソート
-    }
+    #sorted = temp.sort {|a, b|
+    #  a[0] <=> b[0] # 価格ソート
+    #}
     buf = Array.new
-    sorted.each do |tp|
+    temp.each do |tp|
       tt = Array.new
       tt[0] = tp[1]
       buf.push(tt)
