@@ -410,9 +410,19 @@ class ProductsController < ApplicationController
 
     @pdata = PriceTable.where(user_id: user_id).order("buy_price ASC NULLS LAST").group(:buy_price, :sell_price).pluck(:buy_price, :sell_price).to_json.html_safe
     @fdata = ListingTemplate.where(user_id: user_id).group(:key, :caption, :value).pluck(:key, :caption, :value).to_json.html_safe
-    @tdata = ReplaceTable.where(user_id: user_id).group(:from_keyword, :to_keyword).pluck(:from_keyword, :to_keyword).to_json.html_safe
-    @kdata = KeywordSet.where(user_id: user_id).group(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).pluck(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).to_json.html_safe
-    temp = NgSeller.where(user_id: user_id).group(:id, :seller_id).pluck(:id, :seller_id)
+    @tdata = ReplaceTable.where(user_id: user_id).order("from_keyword ASC").group(:from_keyword, :to_keyword).pluck(:from_keyword, :to_keyword).to_json.html_safe
+    @kdata = KeywordSet.where(user_id: user_id).order("keyword ASC").group(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).pluck(:keyword, :brand_name, :manufacturer, :recommended_browse_nodes, :generic_keywords).to_json.html_safe
+    temp = NgSeller.where(user_id: user_id).order("seller_id ASC").group(:seller_id).pluck(:seller_id)
+    @ndata = Array.new
+
+    temp.each do |nn|
+      @ndata.push([nn])
+    end
+
+    @ndata = @ndata.to_json.html_safe
+
+=begin
+    temp = NgSeller.where(user_id: user_id).order("seller_id ASC").group(:id, :seller_id).pluck(:id, :seller_id)
     sorted = temp.sort {|a, b|
       a[0] <=> b[0] # 価格ソート
     }
@@ -423,8 +433,11 @@ class ProductsController < ApplicationController
       buf.push(tt)
     end
     @ndata = buf.to_json.html_safe
+=end
 
     logger.debug(@ndata)
+
+
     if request.post? then
       data = JSON.parse(params[:data])
 
