@@ -130,16 +130,14 @@
   });
 
 
-
+  var mnum = 3000;
   if(tdata.length == 0){
-    var mnum = 500;
     for(var i = 0; i < mnum; i++){
       tdata[i] = [];
       tdata[i][0] = "";
       tdata[i][1] = "";
     }
   }else{
-    var mnum = 500;
     for(var i = tdata.length; i < mnum; i++){
       tdata[i] = [];
       tdata[i][0] = "";
@@ -157,15 +155,14 @@
     rowHeaders: true,
     colHeaders: ["置換前","置換後"],
     maxCols: maxColnum,
-    maxRows: maxRownum,
+    maxRows: mnum,
     manualColumnResize: true,
     autoColumnSize: false,
     colWidths:[200, 200]
   });
 
-
+  var mnum = 500;
   if(kdata.length == 0){
-    var mnum = 500;
     for(var i = 0; i < mnum; i++){
       kdata[i] = [];
       kdata[i][0] = "";
@@ -175,7 +172,6 @@
       kdata[i][4] = "";
     }
   }else{
-    var mnum = 500;
     for(var i = kdata.length; i < mnum; i++){
       kdata[i] = [];
       kdata[i][0] = "";
@@ -196,7 +192,7 @@
     rowHeaders: true,
     colHeaders: ["キーワード","brand_name（ブランド名）","manufacturer（メーカ名）","recommended_browse_nodes（推奨ブラウズノード）","generic_keywords（検索キーワード）"],
     maxCols: 5,
-    maxRows: maxRownum,
+    maxRows: mnum,
     manualColumnResize: true,
     autoColumnSize: false,
     colWidths:[200, 250, 250, 450, 400]
