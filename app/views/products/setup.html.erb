@@ -198,14 +198,15 @@
     colWidths:[200, 250, 250, 450, 400]
   });
 
+
+  var mnum = 3000;
+
   if(ndata.length == 0){
-    var mnum = 500;
     for(var i = 0; i < mnum; i++){
       ndata[i] = [];
       ndata[i][0] = "";
     }
   }else{
-    var mnum = 500;
     for(var i = ndata.length; i < mnum; i++){
       ndata[i] = [];
       ndata[i][0] = "";
@@ -222,7 +223,7 @@
     rowHeaders: true,
     colHeaders: ["除外セラーID"],
     maxCols: 1,
-    maxRows: maxRownum,
+    maxRows: mnum,
     manualColumnResize: true,
     autoColumnSize: false,
     colWidths:[250]
