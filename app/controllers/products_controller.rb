@@ -3,8 +3,24 @@ class ProductsController < ApplicationController
   require 'open-uri'
   require 'peddler'
 
-  before_action :authenticate_user!, :except => [:regist, :check]
-  protect_from_forgery :except => [:regist, :check]
+  before_action :authenticate_user!, :except => [:regist, :check, :delete]
+  protect_from_forgery :except => [:regist, :check, :delete]
+
+  def delete
+    if request.post? then
+      logger.debug("====== delete Start =======")
+      user = params[:user]
+      password = params[:password]
+      tuser =  User.find_by(email: user)
+      if tuser != nil then
+        #delete
+        if tuser.valid_password?(params[:password]) then
+          tuser.delete
+          logger.debug("user delete")
+        end
+      end
+    end
+  end
 
   def show
     @login_user = current_user
