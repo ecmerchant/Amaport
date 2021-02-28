@@ -60,9 +60,22 @@ class ProductsController < ApplicationController
               condition = /<th class="ProductTable__th">状態<\/th>([\s\S]*?)\/li>/.match(html)
               if condition != nil then
                 condition = condition[1]
-                condition = /<li class="ProductTable__item">([\s\S]*?)</.match(condition)[1]
-                condition = condition.gsub(/\R/, "")
-                condition = condition.strip
+                condition = /<li class="ProductTable__item">([\s\S]*?)\/a>/.match(condition)
+                if condition.present? then                  
+                  condition = condition[1]
+                  if condition.include?(">") then 
+                    logger.debug("------ condition -------")
+                    logger.debug(condition)
+                    condition = />([\s\S]*?)</.match(condition)[1]
+                    logger.debug("------------")
+                    logger.debug(condition)
+                  end
+                  condition = condition.gsub(/\R/, "")
+                  condition = condition.strip
+                end
+                logger.debug(condition)
+              else 
+                condition = ""
               end
               k = 0
               while k < productinfo.length
