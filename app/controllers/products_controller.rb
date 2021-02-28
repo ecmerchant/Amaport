@@ -89,11 +89,16 @@ class ProductsController < ApplicationController
 
               priceType = doc.xpath('//div[@class="Price Price--current"]//dd[@class="Price__value"]')
               if priceType[0] != nil then
+                logger.debug("-----a ----")
                 listPrice = priceType[0].text.gsub("\n","")
                 if listPrice.include?("（税 0 円）") == true then
+                  logger.debug("-----b ----")
+                  logger.debug(listPrice)
+                  listPrice = /^([\s\S]*?)円/.match(listPrice)[1]
                   listPrice = listPrice.gsub(/（税 0 円）/,"")
                   listPrice = CCur(listPrice)
                 else
+                  logger.debug("-----c ----")
                   listPrice = listPrice.match(/税込([\s\S]*?)円/)[1]
                   listPrice = CCur(listPrice)
                 end
@@ -139,6 +144,7 @@ class ProductsController < ApplicationController
 
             else
               #オークションが終了している場合
+              logger.debug("======END ACUTION======")
               title = doc.xpath('//h1[@property="auction:Title"]')[0].text
               title = "[終了したオークション]" + title
 
