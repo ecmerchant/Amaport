@@ -300,7 +300,7 @@ class ProductsController < ApplicationController
             #logger.debug(temp)
             #return
             logger.debug("========= INFO ==========")
-            item_id = /jp\/([\s\S]*?)$/.match(url)[1]
+            item_id = /jp\/([\s\S]*?)[$|\?]/.match(url)[1]
             price = /property="product:price:amount" content="([\s\S]*?)"/.match(html)[1]
 
             if /商品の状態<\/th>([\s\S]*?)<\/tr>/.match(html) != nil then
