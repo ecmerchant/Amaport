@@ -87,18 +87,13 @@ class ProductsController < ApplicationController
               end
               k = 0
 
-              priceType = doc.xpath('//div[@class="Price Price--current"]//dd[@class="Price__value"]')
+              priceType = doc.xpath('//dd[@class="Price__value"]')
               if priceType[0] != nil then
-                logger.debug("-----a ----")
                 listPrice = priceType[0].text.gsub("\n","")
                 if listPrice.include?("（税 0 円）") == true then
-                  logger.debug("-----b ----")
-                  logger.debug(listPrice)
-                  listPrice = /^([\s\S]*?)円/.match(listPrice)[1]
                   listPrice = listPrice.gsub(/（税 0 円）/,"")
                   listPrice = CCur(listPrice)
                 else
-                  logger.debug("-----c ----")
                   listPrice = listPrice.match(/税込([\s\S]*?)円/)[1]
                   listPrice = CCur(listPrice)
                 end
@@ -106,7 +101,7 @@ class ProductsController < ApplicationController
                 listPrice = 0
               end
 
-              priceType = doc.xpath('//div[@class="Price Price--buynow"]//dd[@class="Price__value"]')
+              priceType = doc.xpath('//dd[@class="Price__value Price__value--buyNow"]')
               if priceType[0] != nil then
                 binPrice = priceType[0].text.gsub("\n","")
                 if binPrice.include?("（税 0 円）") == true then
