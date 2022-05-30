@@ -2,6 +2,8 @@ class ProductsController < ApplicationController
 
   require 'open-uri'
   require 'peddler'
+  require 'uri'
+  require 'net/http'
 
   before_action :authenticate_user!, :except => [:regist, :check, :delete]
   protect_from_forgery :except => [:regist, :check, :delete]
@@ -47,12 +49,33 @@ class ProductsController < ApplicationController
           if url.include?("auctions.yahoo") then
             logger.debug("====== Yahoo Auction =======")
 
+            uri = URI.parse(url)
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = uri.scheme === "https"
+            # http.set_debug_output($stderr)
+
+            headers = {
+              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
+              "Connection" => "keep-alive",
+            }
+
+            response = http.get(uri.path, headers)
+            html = response.body
+=begin
             charset = nil
-            html = open(url) do |f|
+            option = {
+              "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
+              "Connection" => "keep-alive",
+              "Accept" => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3'
+            }
+            html = open(url, option) do |f|
               charset = f.charset # 文字種別を取得
               f.read # htmlを読み込んで変数htmlに渡す
             end
-            doc = Nokogiri::HTML.parse(html, nil, charset)
+=end
+            charset = "UTF-8"
+            html = html.force_encoding("UTF-8")
+            doc = Nokogiri::HTML.parse(html)
             if doc.xpath('//p[@class="ptsFin"]')[0] == nil then
               #商品が出品中の場合
               title = doc.xpath('//h1[@class="ProductTitle__text"]').text.gsub("\n","")
