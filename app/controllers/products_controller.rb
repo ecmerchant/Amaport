@@ -48,6 +48,8 @@ class ProductsController < ApplicationController
           buf = Array.new
           if url.include?("auctions.yahoo") then
             logger.debug("====== Yahoo Auction =======")
+            
+            auctionID = url.gsub("https://page.auctions.yahoo.co.jp/jp/auction/", "")
 
             uri = URI.parse(url)
             http = Net::HTTP.new(uri.host, uri.port)
@@ -109,6 +111,7 @@ class ProductsController < ApplicationController
                 k += 1
               end
               k = 0
+               
 
               priceType = doc.xpath('//dd[@class="Price__value"]')
               if priceType[0] != nil then
