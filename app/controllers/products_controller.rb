@@ -78,7 +78,7 @@ class ProductsController < ApplicationController
             doc = Nokogiri::HTML.parse(html)
             if doc.xpath('//p[@class="ptsFin"]')[0] == nil then
               #商品が出品中の場合
-              title = doc.xpath('//h1[@class="ProductTitle__text"]').text.gsub("\n","")
+              title = doc.xpath('//h1[@class="ProductTitle__text"]')[0].text.gsub("\n","")
               productinfo = doc.xpath('//li[@class="ProductDetail__item"]')
               condition = /<th class="ProductTable__th">状態<\/th>([\s\S]*?)\/li>/.match(html)
               if condition != nil then
