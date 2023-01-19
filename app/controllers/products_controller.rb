@@ -141,12 +141,13 @@ class ProductsController < ApplicationController
 
               #bitnum = doc.xpath('//dd[@class="Count__number"]')[0].text
               #bitnum = bitnum.slice(0,bitnum.length-4)
-              bitnum = doc.xpath('//span[@class="Count__detail"]')[0].text
-              bitnum = bitnum.gsub("件", "")
-
-              restTime = doc.xpath('//dd[@class="Count__number"]')[1].text
-              restTime = restTime.slice(0,restTime.length-4)
-
+              #bitnum = doc.xpath('//span[@class="Count__detail"]')[0].text
+              #bitnum = bitnum.gsub("件", "")
+              bitnum = ""
+                
+              #restTime = doc.xpath('//dd[@class="Count__number"]')[1].text
+              #restTime = restTime.slice(0,restTime.length-4)
+              restTime = ""
               images = doc.xpath('//div[@class="ProductImage__inner"]')
               image = []
 
